@@ -7,7 +7,7 @@ Edit the variables in `private_variables.py`.
 
 Because your computer might not be on 24/7, I run this script multiple times per day (between 06:00 and 21:00 every hour). I do this by adding a cron job at my Raspberry Pi, by using `crontab -e` and then adding:
 ```
-0 8-21/1 * * 1-5 /usr/bin/python /home/pi/arxiv-feed-mailer/send_arxiv.py >> /home/pi/arxiv-feed-mailer/send.log 2>&1
+0 8-21/1 * * 1-5 /usr/bin/python ~/arxiv-feed-mailer/send_arxiv.py >> ~/arxiv-feed-mailer/send.log 2>&1
 ```
 
 ### Setup Google API
@@ -23,7 +23,7 @@ In resulting dialog click DOWNLOAD CLIENT CONFIGURATION and save the file `crede
 
 2. Install the Google Client Library and other Python dependencies with:
   ```
-  pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+  pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib feedparser
   ```
 
 3. Run the code using the following command:
