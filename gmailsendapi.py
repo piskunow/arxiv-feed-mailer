@@ -9,12 +9,17 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+import sys
+
+home_path = os.path.expanduser("~")
+secrets_path = home_path + "/Dropbox/arxiv/"
+sys.path.append(secrets_path)
+
 from private_variables import my_mail
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.send',
           ]
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
+CLIENT_SECRET_FILE = secrets_path + '/client_secret.json'
 
 
 def get_credentials():
@@ -27,19 +32,21 @@ def get_credentials():
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    token_path = os.path.join(secrets_path, 'token.pickle')
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
+            creds_path = os.path.join(secrets_path, 'credentials.json')
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                creds_path, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open(token_path, 'wb') as token:
             pickle.dump(creds, token)
     return creds
 
@@ -62,12 +69,12 @@ def create_message(sender, to, subject, message_text):
     Returns:
         An object containing a base64url encoded email object.
     """
-  message = MIMEText(message_text, 'html')
-  message['to'] = to
-  message['from'] = sender
-  message['subject'] = subject
-  raw = base64.urlsafe_b64encode(message.as_string().encode()).decode()
-  return {'raw': raw}
+    message = MIMEText(message_text, 'html')
+    message['to'] = to
+    message['from'] = sender
+    message['subject'] = subject
+    raw = base64.urlsafe_b64encode(message.as_string().encode()).decode()
+    return {'raw': raw}
 
 
 

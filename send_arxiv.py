@@ -6,10 +6,14 @@ from gmailsendapi import send_message, create_message
 import datetime
 import re
 import feedparser
+import sys
+
+home_path = os.path.expanduser("~")
+secrets_path = home_path + "/Dropbox/arxiv/"
+
 from private_variables import (title_words, abstract_words,
                                author_words, feed_url, my_mail)
 
-file_path = os.path.dirname(os.path.abspath(__file__))
 now = datetime.datetime.now()
 date_str = str(now.date())
 
@@ -65,7 +69,7 @@ def send_todays_arxiv(sender, to):
 
 if __name__ == "__main__":
     # execute only if run as a script
-    send_file = os.path.join(file_path, 'send.txt')
+    send_file = os.path.join(secrets_path, 'send.txt')
     if not os.path.exists(send_file):
         # Create send.txt if it doesn't exist
         open(send_file, 'w').close()
