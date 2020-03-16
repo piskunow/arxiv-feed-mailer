@@ -13,21 +13,26 @@ file_path = os.path.dirname(os.path.abspath(__file__))
 now = datetime.datetime.now()
 date_str = str(now.date())
 
-def filter(entry):
-    return (any([word in entry.summary.lower() for word in abstract_words])
-            or any([author in entry.author.lower() for author in author_words])
-            or any([titleword in entry.title.lower() for titleword in title_words + abstract_words]))
+
+def _filter(entry):
+    return (any([word in entry.summary.lower()
+                 for word in abstract_words])
+            or any([author in entry.author.lower()
+                    for author in author_words])
+            or any([titleword in entry.title.lower()
+                    for titleword in title_words + abstract_words]))
 
 
 def strip_html(text):
-    """See http://stackoverflow.com/a/9662362"""
+    """See http://stackoverflow.com/a/9662362."""
     return re.sub('<[^<]+?>', '', text)
 
 
-def get_arxiv_mail(title_words, abstract_words, 
+def get_arxiv_mail(title_words, abstract_words,
                    author_words, feed_url, my_mail):
+    """Fetch arXiv content."""
     feed = feedparser.parse(feed_url)
-    filtered_entries = [entry for entry in feed.entries if filter(entry)]
+    filtered_entries = [entry for entry in feed.entries if _filter(entry)]
 
     msg = ["<h1>arXiv results for {}</h1>".format(date_str)]
 
@@ -37,7 +42,8 @@ def get_arxiv_mail(title_words, abstract_words,
         msg.append('<p>{}</p>'.format(strip_html(entry.description)))
         num = 'arXiv:' + entry['id'].split('/')[-1]
         link = '<a href="{}">{}</a>'.format(entry['id'], num)
-        pdf_link = '[<a href="{}">pdf</a>]'.format(entry.id.replace('abs', 'pdf'))
+        pdf_link = '[<a href="{}">pdf</a>]'.format(
+            entry.id.replace('abs', 'pdf'))
         msg.append(link + " " + pdf_link)
     keywords = ', '.join(title_words + abstract_words)
     authors = ', '.join(author_words)
@@ -49,6 +55,7 @@ def get_arxiv_mail(title_words, abstract_words,
 
 
 def send_todays_arxiv(sender, to):
+    """Fetch arxiv content and send email."""
     message_text = get_arxiv_mail(title_words, abstract_words,
                                   author_words, feed_url, my_mail)
     subject = "Today's arXiv {}".format(date_str)
@@ -66,7 +73,6 @@ if __name__ == "__main__":
     with open(send_file, 'r') as f:
         # Read the date when the last email was sent.
         send_file_date = f.read()
-
 
     if send_file_date == date_str:
         # Don't send if mail is already sent.
