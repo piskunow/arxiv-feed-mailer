@@ -1,4 +1,6 @@
-my_mail = "basnijholt@gmail.com"
+"""Private variables to update when needed."""
+
+my_mail = "pablo.perez.piskunow@gmail.com"
 
 # Search for these words only in the title
 title_words = []
