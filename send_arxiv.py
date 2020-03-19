@@ -17,19 +17,22 @@ from private_variables import (title_words, abstract_words,
 now = datetime.datetime.now()
 date_str = str(now.date())
 
+TAG_RE = re.compile(r'<[^>]+>')
+
+
+def remove_tags(text):
+    """See http://stackoverflow.com/a/9662362."""
+    return TAG_RE.sub('', text)
+
 
 def _filter(entry):
-    return (any([word in entry.summary.lower()
-                 for word in abstract_words])
-            or any([author in entry.author.lower()
-                    for author in author_words])
-            or any([titleword in entry.title.lower()
+    title = remove_tags(entry.title.lower()).replace('\n', ' ')
+    author = remove_tags(entry.author.lower()).replace('\n', ' ')
+    summary = remove_tags(entry.summary.lower()).replace('\n', ' ')
+    return (any([word in summary for word in abstract_words])
+            or any([name in author for name in author_words])
+            or any([titleword in title
                     for titleword in title_words + abstract_words]))
-
-
-def strip_html(text):
-    """See http://stackoverflow.com/a/9662362."""
-    return re.sub('<[^<]+?>', '', text)
 
 
 def get_arxiv_mail(title_words, abstract_words,
@@ -42,8 +45,8 @@ def get_arxiv_mail(title_words, abstract_words,
 
     for entry in filtered_entries:
         msg.append('<h2>{}</h2>'.format(entry.title))
-        msg.append('<h3>{}</h3>'.format(strip_html(entry.author)))
-        msg.append('<p>{}</p>'.format(strip_html(entry.description)))
+        msg.append('<h3>{}</h3>'.format(remove_tags(entry.author)))
+        msg.append('<p>{}</p>'.format(remove_tags(entry.description)))
         num = 'arXiv:' + entry['id'].split('/')[-1]
         link = '<a href="{}">{}</a>'.format(entry['id'], num)
         pdf_link = '[<a href="{}">pdf</a>]'.format(
