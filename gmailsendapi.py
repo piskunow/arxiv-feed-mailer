@@ -77,7 +77,6 @@ def create_message(sender, to, subject, message_text):
     return {'raw': raw}
 
 
-
 def send_message(message):
     """Send an email message.
 
@@ -93,13 +92,12 @@ def send_message(message):
     service = get_service()
     user_id = 'me'
     try:
-        message = (service.users().messages().send(userId=user_id, body=message)
-                   .execute())
+        message = (service.users().messages().send(
+            userId=user_id, body=message).execute())
         print('Message Id: %s' % message['id'])
         return message
-    except Exception as error: #urllib2.HTTPError as error:
+    except Exception as error:  # urllib2.HTTPError as error:
         print('An error occurred: %s' % error)
-
 
 
 if __name__ == '__main__':
